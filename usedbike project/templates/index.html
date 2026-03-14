@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Used Bike Price Predictor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            color: white;
+            z-index: 10;
+            position: relative;
+        }
+
+        .bike-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bikeRide 3s ease-in-out infinite;
+        }
+
+        @keyframes bikeRide {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(20px) rotate(-5deg); }
+            75% { transform: translateX(-20px) rotate(5deg); }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease-out;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out 0.6s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button:active {
+            transform: translateY(-1px);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 60px;
+            animation: fadeInUp 1s ease-out 0.9s both;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-animation:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-animation:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .bg-animation:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .subtitle {
+                font-size: 1.1em;
+                padding: 0 20px;
+            }
+            
+            .features {
+                flex-direction: column;
+                gap: 20px;
+                padding: 0 20px;
+            }
+            
+            .cta-button {
+                padding: 15px 30px;
+                font-size: 1.1em;
+            }
+        }
+
+        /* Pulse animation for CTA button */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background elements -->
+    <div class="bg-animation"></div>
+    <div class="bg-animation"></div>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="bike-icon">
+            <i class="fas fa-motorcycle"></i>
+        </div>
+        
+        <h1>Used Bike Price Predictor</h1>
+        <p class="subtitle">
+            Get instant, accurate price estimates for your used bike using advanced AI technology
+        </p>
+        
+        <a href="/predict" class="cta-button pulse">
+            <i class="fas fa-calculator"></i> Get Started
+        </a>
+
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-brain feature-icon"></i>
+                <div class="feature-title">AI Powered</div>
+                <div class="feature-desc">Advanced machine learning algorithms</div>
+            </div>
+            <div class="feature">
+                <i class="fas fa-bolt feature-icon"></i>
+                <div class="feature-title">Instant Results</div>
+                <div class="feature-desc">Get predictions in seconds</div>
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt feature-icon"></i>
+                <div class="feature-title">Accurate</div>
+                <div class="feature-desc">High precision price estimates</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctaButton = document.querySelector('.cta-button');
+            const features = document.querySelectorAll('.feature');
+            
+            // Remove pulse animation after first hover
+            ctaButton.addEventListener('mouseenter', function() {
+                this.classList.remove('pulse');
+            });
+            
+            // Animate features on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                        }, index * 100);
+                    }
+                });
+            });
+            
+            features.forEach(feature => {
+                observer.observe(feature);
+            });
+        });
+    </script>
+</body>
+</html>

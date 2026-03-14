@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Used Bike Price Predictor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input:focus + .input-icon,
+        .form-group select:focus + .input-icon {
+            color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out 0.7s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            display: none;
+            animation: bounceIn 0.8s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-price {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .result-range {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .result-price {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-motorcycle"></i> Bike Price Predictor</h1>
+            <p>Get instant price estimates for your used bike</p>
+        </div>
+
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="bike_name">Bike Name</label>
+                <div class="input-container">
+                    <input type="text" id="bike_name" name="bike_name" required placeholder="e.g., Royal Enfield Classic 350">
+                    <i class="fas fa-motorcycle input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="brand">Brand</label>
+                <div class="input-container">
+                    <select id="brand" name="brand" required>
+                        <option value="">Select Brand</option>
+                    </select>
+                    <i class="fas fa-tag input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="city">City</label>
+                <div class="input-container">
+                    <select id="city" name="city" required>
+                        <option value="">Select City</option>
+                    </select>
+                    <i class="fas fa-map-marker-alt input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="kms_driven">Kilometers Driven</label>
+                <div class="input-container">
+                    <input type="number" id="kms_driven" name="kms_driven" required placeholder="e.g., 15000" min="0">
+                    <i class="fas fa-tachometer-alt input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="owner">Owner Type</label>
+                <div class="input-container">
+                    <select id="owner" name="owner" required>
+                        <option value="">Select Owner Type</option>
+                    </select>
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age (Years)</label>
+                <div class="input-container">
+                    <input type="number" id="age" name="age" required placeholder="e.g., 3" min="0" max="50">
+                    <i class="fas fa-calendar input-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="power">Engine Power (CC)</label>
+                <div class="input-container">
+                    <select id="power" name="power" required>
+                        <option value="">Select Engine Power</option>
+                    </select>
+                    <i class="fas fa-cog input-icon"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <i class="fas fa-calculator"></i> Predict Price
+            </button>
+        </form>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-price" id="resultPrice"></div>
+            <div class="result-range" id="resultRange"></div>
+        </div>
+
+        <a href="/" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+    </div>
+
+    <script>
+        // Load options when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOptions();
+        });
+
+        async function loadOptions() {
+            try {
+                const response = await fetch('/get_options');
+                const data = await response.json();
+                
+                // Populate brand dropdown
+                const brandSelect = document.getElementById('brand');
+                data.brands.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand;
+                    option.textContent = brand;
+                    brandSelect.appendChild(option);
+                });
+                
+                // Populate city dropdown
+                const citySelect = document.getElementById('city');
+                data.cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+                
+                // Populate owner dropdown
+                const ownerSelect = document.getElementById('owner');
+                data.owners.forEach(owner => {
+                    const option = document.createElement('option');
+                    option.value = owner;
+                    option.textContent = owner;
+                    ownerSelect.appendChild(option);
+                });
+                
+                // Populate power dropdown
+                const powerSelect = document.getElementById('power');
+                data.power_options.forEach(power => {
+                    const option = document.createElement('option');
+                    option.value = power;
+                    option.textContent = power + ' CC';
+                    powerSelect.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error loading options:', error);
+            }
+        }
+
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Hide previous results
+            resultContainer.classList.remove('show');
+            errorMessage.style.display = 'none';
+            
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Predicting...';
+            
+            try {
+                const formData = new FormData(this);
+                const data = {
+                    bike_name: formData.get('bike_name'),
+                    brand: formData.get('brand'),
+                    city: formData.get('city'),
+                    kms_driven: formData.get('kms_driven'),
+                    owner: formData.get('owner'),
+                    age: formData.get('age'),
+                    power: formData.get('power')
+                };
+                
+                const response = await fetch('/predict_price', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('resultPrice').innerHTML = 
+                        `<i class="fas fa-rupee-sign"></i> ${result.predicted_price.toLocaleString()}`;
+                    document.getElementById('resultRange').innerHTML = 
+                        `Expected range: <i class="fas fa-rupee-sign"></i> ${result.price_range.min.toLocaleString()} - <i class="fas fa-rupee-sign"></i> ${result.price_range.max.toLocaleString()}`;
+                    resultContainer.classList.add('show');
+                    
+                    // Scroll to result
+                    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    throw new Error(result.error || 'Prediction failed');
+                }
+                
+            } catch (error) {
+                errorMessage.textContent = 'Error: ' + error.message;
+                errorMessage.style.display = 'block';
+                errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.innerHTML = '<i class="fas fa-calculator"></i> Predict Price';
+            }
+        });
+
+        // Add input animations
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
